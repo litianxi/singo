@@ -6,6 +6,6 @@ func migration() {
 	// 自动迁移模式
 	DB.AutoMigrate(&User{})
 	DB.AutoMigrate(&ShortName{})
-	DB.AutoMigrate(&Users{})
+	//DB.AutoMigrate(&Users{})
 
 }

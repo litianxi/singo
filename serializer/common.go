@@ -1,6 +1,9 @@
 package serializer
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
+)
 
 // Response 基础序列化器
 type Response struct {
@@ -68,4 +71,36 @@ func ParamErr(msg string, err error) Response {
 		msg = "参数错误"
 	}
 	return Err(CodeParamErr, msg, err)
+}
+
+// DataList 基础列表结构
+type DataList struct {
+	Items interface{} `json:"items"`
+	Total uint        `json:"total"`
+}
+
+func BuildListResponse(items interface{}, total uint) Response {
+	return Response{
+		Data: DataList{
+			Items: items,
+			Total: total,
+		},
+	}
+}
+
+//分页封装
+func Paginate(page int, pageSize int) func(db *gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		if page == 0 {
+			page = 1
+		}
+		switch {
+		case pageSize > 100:
+			pageSize = 100
+		case pageSize <= 0:
+			pageSize = 2
+		}
+		offset := (page - 1) * pageSize
+		return db.Offset(offset).Limit(pageSize)
+	}
 }

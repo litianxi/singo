@@ -28,11 +28,6 @@ func NewRouter() *gin.Engine {
 		// 用户登录
 		v1.POST("user/login", api.UserLogin)
 
-		v1.POST('shortname',api.CreateShortName)
-
-
-
-
 		// 需要登录保护的
 		auth := v1.Group("")
 		auth.Use(middleware.AuthRequired())
@@ -41,6 +36,28 @@ func NewRouter() *gin.Engine {
 			auth.GET("user/me", api.UserMe)
 			auth.DELETE("user/logout", api.UserLogout)
 		}
+	}
+	{
+		// 短域名创建
+		v1.POST("shortname", api.CreateShortName)
+
+		// 短域名详情
+		v1.GET("shortname/:id", api.ShortNameShow)
+
+		// 短域名列表
+		v1.GET("shortname", api.ListShortName)
+
+		// 短域名删除
+		v1.DELETE("shortname/:id", api.DeleteShortName)
+
+		// 短域名修改
+		v1.PUT("shortname/:id", api.UpdateShortName)
+	}
+
+	// swagger文档，浏览器打开 http://localhost:3000/swagger/index.html
+	{
+		r.StaticFile("/swagger.json", "./swagger/swagger.json")
+		r.Static("/swagger", "./swagger/dist")
 	}
 	return r
 }
